@@ -1,0 +1,7 @@
+en:
+  devise:
+    latch:
+      user:
+        invalid_token: "Token not found or expired"
+        pair_success: "User successfully paired"
+        already_paired: "Account and application already paired"
