@@ -1,3 +1,4 @@
+require 'devise/latchable/rails'
 
 module Devise
   module Latchable
@@ -8,5 +9,3 @@ Devise.add_module :latchable,
                   :model => 'devise/latchable/model',
                   :controller => 'controllers/latch',
                   :route => { :latch_pair => [:pair] }
-
-require 'devise/latchable/rails'

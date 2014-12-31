@@ -4,4 +4,6 @@ en:
       user:
         invalid_token: "Token not found or expired"
         pair_success: "User successfully paired"
+        unpair_success: "User successfully unpaired"
         already_paired: "Account and application already paired"
+        missing_parameter: "Missing parameter in API call"

@@ -1,5 +1,4 @@
 require 'latchsdk'
-require 'logger'
 
 module Devise
   module Models
@@ -8,48 +7,58 @@ module Devise
 
       attr_reader :token
 
-      ERROR_CODES = {
+      PAIR_ERROR_CODES = {
         206 => 'invalid_token',
-        205 => 'already_paired'
+        205 => 'already_paired',
+        401 => 'missing_parameter'
       }
 
       included do
         before_destroy :unpair_user
       end
 
-      @@logger = Logger.new(STDOUT)
       @@api = Latch.new(::Devise.latch_appid, Devise.latch_appsecret)
 
+      # Overwrite active_for_authentication? method, in order to deny any access
+      # to devise protected resources when latch is locked
       def active_for_authentication?
-        super && self.is_latch_active?
+        super && self.latch_unlocked?
       end
 
+      # Method that, given a token, pairs the user to the application. It adds errors
+      # to the model in case the API returns an error, or save the accountId otherwise
       def pair token
         pair_result = @@api.pair(token)
         if pair_result.error
-          self.errors.add(:token, ERROR_CODES[pair_result.error.code])
+          self.errors.add(:token, PAIR_ERROR_CODES[pair_result.error.code])
         else
-          self.latch_account_id = pair_result.data.account_id
+          self.latch_account_id = pair_result.data['accountId']
           save(validate: false)
         end
-        @@logger.debug("Pair user #{token} #{pair_result.data.to_json} #{pair_result.error.to_json}")
       end
 
+      # Method that unpairs the current user with the application
       def unpair
-        @@logger.debug("unpair user #{self.id.to_s}")
-        @@api.unpair(self.account_id)
+        @@api.unpair(self.latch_account_id)
+        self.latch_account_id = nil
+        save
       end
 
+      # For the given user, returns true if the account has been paired
       def paired?
-        self.account_id.nil?
+        !self.latch_account_id.nil?
       end
 
-      protected
-
-      def is_latch_active?
-        is_active_data = @@api.status(self.id.to_s).error
-        @@logger.debug("Is Active user #{self.id.to_s}? #{is_active_data.to_json}")
-        true
+      # For the given user, returns true if latch is unlocked or the user has
+      # not been paired
+      def latch_unlocked?
+        if self.paired?
+          latch_status = @@api.status(self.latch_account_id)
+          operations = latch_status.data['operations']
+          operations[operations.keys.first]['status'] == 'on'
+        else
+          true
+        end
       end
 
     end

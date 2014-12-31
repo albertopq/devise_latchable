@@ -1,23 +1,28 @@
 class Devise::LatchController < DeviseController
 
+  before_action :authenticate_user!
+
+  # GET /resource/:id/pair
   def pair
-    @user = User.find(params[:id])
+    @user = current_user
   end
 
+  # GET /resource/:id/unpair
   def unpair
-    user = User.find(params[:id])
-    user.unpair
-    redirect_to user_path, :notice => 'Success'
+    current_user.unpair
+    set_flash_message :notice, :unpair_success
+    redirect_to user_path(current_user)
   end
 
+
+  # POST /resource/:id/pair
   def submit_token
-    user = User.find(params[:id])
-    user.pair params[:token]
-    if user.errors[:token].empty?
-      # set_flash_message :notice, :pair_success
-      redirect_to user_path, :notice => 'Success'
+    current_user.pair params[:token]
+    if current_user.errors[:token].empty?
+      set_flash_message :notice, :pair_success
+      redirect_to user_path(current_user)
     else
-      set_flash_message :alert, user.errors[:token].first
+      set_flash_message :error, current_user.errors[:token].first
       redirect_to user_pair_path
     end
   end

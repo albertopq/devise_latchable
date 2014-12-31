@@ -2,9 +2,6 @@
   <%= link_to "Unpair", user_unpair_path(@user) %>
 <% else -%>
   <%= form_for(@user, :method => :post, :url => 'pair') do |f| %>
-    <% flash.each do |name, msg| -%>
-      <%= content_tag :div, msg, class: name %>
-    <% end -%>
     <div>
       <%= f.label(:token, "Token:") %>
       <%= text_field_tag :token %>
