@@ -1,0 +1,48 @@
+{<img src="https://travis-ci.org/albertopq/devise_latchable.png" />}[https://travis-ci.org/albertopq/devise_latchable]
+= Devise Latchable
+
+Latch is an online service which allows you to protect all your online accounts with one simple swipe gesture.
+This gem provides the integration between Devise, the well known Users management plugin, with Latch, in order to protect all the web applications using Devise login system with this extra security layer.
+
+More info about Latch: https://latch.elevenpaths.com/
+
+== Getting Started
+
+1. Add into your Gemfile:
+
+    gem 'devise_latchable'
+
+2. Bundle install your app
+
+    bundle install
+
+3. Configure your Latch appid and appsecret, adding to config/initializers/devise.rb
+
+    require 'devise_latchable'
+    config.latch_appid = 'yourappid'
+    config.latch_appsecret = 'yourappsecret'
+
+4. Generate the migrations for yopur MODEL (User, for example)
+
+    rails generate devise_latchable User
+
+5. Run the migrations
+
+    rake db:migrate
+
+6. Add :latchable to your model
+
+    devise :latchable
+
+== Usage
+
+This gem provides 3 main methods:
+
+<code>
+ User
+</code>
+
+
+== Support
+
+Open an issue in https://github.com/albertopq/devise_latchable if you need further support or want to report a bug
