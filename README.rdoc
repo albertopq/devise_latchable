@@ -36,11 +36,17 @@ More info about Latch: https://latch.elevenpaths.com/
 
 == Usage
 
-This gem provides 3 main methods:
+In order to use Latch, the user needs to be paired with your applications. You can link to the user_pair_path in any of your views:
 
-<code>
- User
-</code>
+  <% if current_user.paired? %>
+    <%= link_to("Unpair", user_unpair_path, :method => :get) %>
+  <% else %>
+    <%= link_to("Pair", user_pair_path, :method => :get) %>
+  <% end %>
+
+You can also directly submit a +:latch_token+ parameter in any form, with a post method to the +user_submit_token_path+
+
+After pairing, any attempt to access a protected resource, will check if the Latch is locked first.
 
 
 == Support
