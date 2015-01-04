@@ -20,5 +20,5 @@ Gem::Specification.new do |s|
   s.required_ruby_version = ">= 1.9.3"
 
   s.add_dependency("devise", "~> 3.0")
-  s.add_dependency("latchsdk", "~> 0.1")
+  s.add_dependency("latchsdk", "~> 1.1")
 end

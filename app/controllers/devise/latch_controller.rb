@@ -17,12 +17,12 @@ class Devise::LatchController < DeviseController
 
   # POST /resource/:id/pair
   def submit_token
-    current_user.pair params[:token]
-    if current_user.errors[:token].empty?
+    current_user.pair params[:latch_token]
+    if current_user.errors[:latch_token].empty?
       set_flash_message :notice, :pair_success
       redirect_to user_path(current_user)
     else
-      set_flash_message :error, current_user.errors[:token].first
+      set_flash_message :error, current_user.errors[:latch_token].first
       redirect_to user_pair_path
     end
   end

@@ -5,7 +5,7 @@ module Devise
     module Latchable
       extend ActiveSupport::Concern
 
-      attr_reader :token
+      attr_reader :latch_token
 
       PAIR_ERROR_CODES = {
         206 => 'invalid_token',
@@ -24,12 +24,12 @@ module Devise
         super && self.latch_unlocked?
       end
 
-      # Method that, given a token, pairs the user to the application. It adds errors
+      # Method that, given a latch_token, pairs the user to the application. It adds errors
       # to the model in case the API returns an error, or save the accountId otherwise
-      def pair token
-        pair_result = @@latch_api.pair(token)
+      def pair latch_token
+        pair_result = @@latch_api.pair(latch_token)
         if pair_result.error
-          self.errors.add(:token, PAIR_ERROR_CODES[pair_result.error.code])
+          self.errors.add(:latch_token, PAIR_ERROR_CODES[pair_result.error.code])
         else
           self.latch_account_id = pair_result.data['accountId']
           save(validate: false)
