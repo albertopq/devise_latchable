@@ -14,10 +14,9 @@ module Devise
       }
 
       included do
-        before_destroy :unpair_user
+        before_destroy :unpair
+        @@latch_api = Latch.new(::Devise.latch_appid, Devise.latch_appsecret)
       end
-
-      @@api = Latch.new(::Devise.latch_appid, Devise.latch_appsecret)
 
       # Overwrite active_for_authentication? method, in order to deny any access
       # to devise protected resources when latch is locked
@@ -28,7 +27,7 @@ module Devise
       # Method that, given a token, pairs the user to the application. It adds errors
       # to the model in case the API returns an error, or save the accountId otherwise
       def pair token
-        pair_result = @@api.pair(token)
+        pair_result = @@latch_api.pair(token)
         if pair_result.error
           self.errors.add(:token, PAIR_ERROR_CODES[pair_result.error.code])
         else
@@ -39,7 +38,7 @@ module Devise
 
       # Method that unpairs the current user with the application
       def unpair
-        @@api.unpair(self.latch_account_id)
+        @@latch_api.unpair(self.latch_account_id)
         self.latch_account_id = nil
         save
       end
@@ -52,13 +51,15 @@ module Devise
       # For the given user, returns true if latch is unlocked or the user has
       # not been paired
       def latch_unlocked?
-        if self.paired?
-          latch_status = @@api.status(self.latch_account_id)
-          operations = latch_status.data['operations']
-          operations[operations.keys.first]['status'] == 'on'
-        else
-          true
-        end
+        self.paired? ? self.request_status : true
+      end
+
+      protected
+
+      def request_status
+        latch_status = @@latch_api.status(self.latch_account_id)
+        operations = latch_status.data['operations']
+        operations[operations.keys.first]['status'] == 'on'
       end
 
     end

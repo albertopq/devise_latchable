@@ -1,9 +1,11 @@
 source 'https://rubygems.org'
 
-gemspec
-
 group :development, :test do
-  gem 'rspec-rails', '~> 3.0'
+  gem 'rspec'
+  gem 'rails'
+  gem 'rspec-mocks'
+  gem 'sqlite3'
 end
 
+gem 'devise'
 gem 'latchsdk'

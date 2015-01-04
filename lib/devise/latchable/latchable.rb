@@ -1,3 +1,4 @@
+require 'devise'
 require 'devise/latchable/rails'
 
 module Devise
